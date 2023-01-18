@@ -17,7 +17,7 @@ const Login = () => {
 
   const handleSubmit = () => {
     console.log(data);
-    createUserWithEmailAndPassword(auth, googleProvider)
+    createUserWithEmailAndPassword(auth,data.email,data.pass)
       .then((res) => {
         console.log(res.user);
       })
