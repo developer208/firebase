@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { app, database } from "../config/firebaseConfig";
 import {
   collection,
@@ -7,11 +7,14 @@ import {
   doc,
   updateDoc,
   deleteDoc,
+  onSnapshot,
+  query,where
 } from "firebase/firestore";
 
 const Firestore = () => {
   const [data, setData] = useState({});
   const collectionRef = collection(database, "users");
+  const emailQuery=query(collectionRef,where("email","==","vedangmule208@gmail.com"));
 
   //add data info firestore
   const handleSubmit = () => {
@@ -65,11 +68,40 @@ const Firestore = () => {
       });
   };
 
+  //realtime Updates
+
+  const realTime = () => {
+    onSnapshot(collectionRef, (data) => {
+      console.log(
+        data.docs.map((item) => {
+          return item.data();
+        })
+      );
+    });
+  };
+
+  //query
+
+  const firebaseQuery=()=>{
+    onSnapshot(emailQuery, (data) => {
+      console.log(
+        data.docs.map((item) => {
+          return item.data();
+        })
+      );
+    });
+  }
+
   const handleInput = (event) => {
     let newInput = { [event.target.name]: event.target.value };
 
     setData({ ...data, ...newInput });
   };
+
+  useEffect(()=>{
+    realTime();
+  },[]);
+
   return (
     <div className="min-h-[400px]  w-[100%]">
       <h1 className="text-2xl text-center text-white  ">
@@ -127,6 +159,18 @@ const Firestore = () => {
           className="p-2 rounded-2xl mt-5  w-[120px] bg-slate-200 mx-auto"
         >
           Delete
+        </button>
+        <button
+          onClick={() => realTime()}
+          className="p-2 rounded-2xl mt-5  w-[120px] bg-slate-200 mx-auto"
+        >
+          Realtime Update
+        </button>
+        <button
+          onClick={() => firebaseQuery()}
+          className="p-2 rounded-2xl mt-5  w-[120px] bg-slate-200 mx-auto"
+        >
+          Firebase Query
         </button>
         {/* <div className="min-h-[100px] w-[350px] bg-white my-3 ">
         </div> */}
